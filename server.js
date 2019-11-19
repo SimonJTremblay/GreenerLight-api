@@ -20,7 +20,6 @@ const database = {
             name: 'John',
             email: 'john@gmail.com',
             password: 'cookies',
-            entries: 0,
             joined: new Date()
         },
         {
@@ -28,7 +27,6 @@ const database = {
             name: 'Sally',
             email: 'sally@gmail.com',
             password: 'bananas',
-            entries: 0,
             joined: new Date()
         }
     ]
@@ -57,7 +55,6 @@ app.post('/register', (req, res) => {
         name: name,
         email: email,
         //password: password,
-        entries: 0,
         joined: new Date()
     })
     res.json(database.users[database.users.length-1]);
