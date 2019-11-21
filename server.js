@@ -8,72 +8,43 @@
 
 const express = require('express');
 const cors = require('cors');
+const knex = require('knex');
+const bcrypt = require('bcryptjs');
+
+// Controllers
+const register = require('./controllers/register')
+const signin = require('./controllers/signin')
+const profile = require('./controllers/profile')
+
+
+const db = knex({
+    client: 'pg',
+    connection: {
+      host : '127.0.0.1',       // equals to home
+      user : 'postgres',
+      password : 'test',
+      database : 'greener-light'
+    }
+  });
+
+  db.select('*').from('users').then(data => {         // don't need to do JSON b/c we are not sending it through http
+    //console.log(data);
+  });
 
 const app = express();
 app.use(express.json());        // DONT FORGET TO PARSE TO JSON
 app.use(cors());
 
-const database = {
-    users:[
-        {
-            id: '123',
-            name: 'John',
-            email: 'john@gmail.com',
-            password: 'cookies',
-            joined: new Date()
-        },
-        {
-            id: '124',
-            name: 'Sally',
-            email: 'sally@gmail.com',
-            password: 'bananas',
-            joined: new Date()
-        }
-    ]
-}
 
-// Get from the root yields a list of all users.
-app.get('/', (req, res) => {
-    res.send(database.users);
-})
+// Get from the root -> yields a list of all users.
+app.get('/', (req, res) => { res.send(database.users) })
 
-// SIGN-IN
-app.post('/signin', (req, res) => {
-    if(req.body.email === database.users[0].email && req.body.password === database.users[0].password){
-        res.json(database.users[0])
-    } else {
-        res.status(404).json('Error logging in.');
-    }
-});
+app.post('/signin', signin.handleSignin(db, bcrypt))
 
-// REGISTER
-app.post('/register', (req, res) => {
-    const { name, email, password } = req.body;
-    // TODO hash password
-    database.users.push({
-        id: '125',
-        name: name,
-        email: email,
-        //password: password,
-        joined: new Date()
-    })
-    res.json(database.users[database.users.length-1]);
-});
+// dependency injection, we're injecting whatever dependencies handleRegister function needs to be able to run
+app.post('/register', (req, res) => { register.handleRegister(req, res, db, bcrypt) })
 
-//PROFILE
-app.get('/profile/:id', (req, res) => {
-    const { id } = req.params;
-    let found = false;
-    database.users.forEach(user => {
-        if(user.id === id){
-            found = true;
-            return res.json(user);
-        }
-    })
-    if(!found){
-        res.status(400).json('not found.');
-    }
-})
+app.get('/profile/:id', (req, res) => { profile.handleProfileGet(req, res, db) })
 
 
 app.listen(3000, () => {
