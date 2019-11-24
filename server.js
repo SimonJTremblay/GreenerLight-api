@@ -15,6 +15,8 @@ const bcrypt = require('bcryptjs');
 const register = require('./controllers/register')
 const signin = require('./controllers/signin')
 const profile = require('./controllers/profile')
+const categories = require('./controllers/categories')
+const meta = require('./controllers/meta')
 
 
 const db = knex({
@@ -37,7 +39,7 @@ app.use(cors());
 
 
 // Get from the root -> yields a list of all users.
-app.get('/', (req, res) => { res.send(database.users) })
+app.get('/', (req, res) => { res.send('This is working.') })
 
 app.post('/signin', signin.handleSignin(db, bcrypt))
 
@@ -45,6 +47,12 @@ app.post('/signin', signin.handleSignin(db, bcrypt))
 app.post('/register', (req, res) => { register.handleRegister(req, res, db, bcrypt) })
 
 app.get('/profile/:id', (req, res) => { profile.handleProfileGet(req, res, db) })
+
+app.get('/categories', (req, res) => { categories.handleCategoriesGet(req, res, db) })
+app.get('/categories/meta', (req, res) => { categories.handleCategoriesAndMetaGet(req, res, db) })
+
+
+app.get('/meta/:id', (req, res) => { meta.handleMetaGetFromId(req, res, db) })
 
 
 app.listen(3000, () => {
