@@ -5,7 +5,7 @@
 /   profile/:userId --> GET = user
 /   
 */
-
+// Dependencies
 const express = require('express');
 const cors = require('cors');
 const knex = require('knex');
@@ -17,6 +17,8 @@ const signin = require('./controllers/signin')
 const profile = require('./controllers/profile')
 const categories = require('./controllers/categories')
 const meta = require('./controllers/meta')
+const charities = require('./controllers/charities')
+
 
 
 const db = knex({
@@ -51,8 +53,10 @@ app.get('/profile/:id', (req, res) => { profile.handleProfileGet(req, res, db) }
 app.get('/categories', (req, res) => { categories.handleCategoriesGet(req, res, db) })
 app.get('/categories/meta', (req, res) => { categories.handleCategoriesAndMetaGet(req, res, db) })
 
-
 app.get('/meta/:id', (req, res) => { meta.handleMetaGetFromId(req, res, db) })
+
+app.get('/charities', (req, res) => { charities.handleCharitiesGet(req, res, db) })
+
 
 
 app.listen(3000, () => {
