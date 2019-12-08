@@ -52,6 +52,8 @@ app.get('/profile/:id', (req, res) => { profile.handleProfileGet(req, res, db) }
 
 app.get('/categories', (req, res) => { categories.handleCategoriesGet(req, res, db) })
 app.get('/categories/meta', (req, res) => { categories.handleCategoriesAndMetaGet(req, res, db) })
+app.post('/categories/pending', (req, res) => { categories.handleCategoriesPendingPost(req, res, db) })   //user submit
+
 
 app.get('/meta/:id', (req, res) => { meta.handleMetaGetFromId(req, res, db) })
 

@@ -17,10 +17,11 @@ const handleCategoriesAndMetaGet = (req, res, db) => {
 
         db.select('C.id', 'C.title', db.raw("array_agg(json_build_object('id',meta.id,'title',meta.title)) as metas"))
 
-        .join('categoriesmeta as cm', 'cm.categories_id' , '=', 'C.id')
-        .join('meta', 'cm.meta_id','=','meta.id')
+        .leftJoin('categoriesmeta as cm', 'cm.categories_id' , '=', 'C.id')
+        .leftJoin('meta', 'cm.meta_id','=','meta.id')
         
         .from("categories as C")
+        .where('C.state', 1)    // 1 = active, 2 = pending, 3= rejected
         
         .groupBy("C.id")
         .then(response => {
@@ -32,9 +33,25 @@ const handleCategoriesAndMetaGet = (req, res, db) => {
         })
         .catch(err => res.status(400).json('Error getting categories/meta.'))
 }
+
+const handleCategoriesPendingPost = (req, res, db) => {
+    const { title } = req.body;
+    if( !title){
+        return res.status(400).json('incorrect form submission');
+    }
+
+    db('categories')
+        .returning(['id', 'title'])
+        .insert({title: title})
+        .then(data => {
+           return res.json(data);
+        })
+        .catch(err => res.status(400).json('Unable to insert data.'));
+}
         
 
 module.exports = {
     handleCategoriesGet: handleCategoriesGet,
-    handleCategoriesAndMetaGet: handleCategoriesAndMetaGet
+    handleCategoriesAndMetaGet: handleCategoriesAndMetaGet,
+    handleCategoriesPendingPost: handleCategoriesPendingPost
 }
