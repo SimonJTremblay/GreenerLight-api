@@ -39,7 +39,6 @@ const handleCategoriesPendingPost = (req, res, db) => {
     if( !title){
         return res.status(400).json('incorrect form submission');
     }
-
     db('categories')
         .returning(['id', 'title'])
         .insert({title: title})
@@ -48,10 +47,35 @@ const handleCategoriesPendingPost = (req, res, db) => {
         })
         .catch(err => res.status(400).json('Unable to insert data.'));
 }
-        
+
+
+const handleCategoriesPendingGet = (req, res, db) => {
+    db.select('*').from('categories').where('state', 2)
+     .then(categories => {
+         if(categories[0].title.length){
+             res.json(categories);
+         } else {
+             res.status(400).json('Not found.')
+         }        
+     })
+     .catch(err => res.status(400).json('Error getting categories.'))
+ }
+ 
+ const handleCategoriesDecisionPut = (req, res, db) => {
+    const { id, state } = req.body;
+    db('categories')
+        .where({id: id})
+        .update({state: state},['id','title','state'])
+     .then(answer => {
+         res.json(answer);       
+     })
+     .catch(err => res.status(400).json('Error updating categories.'))
+ } 
 
 module.exports = {
     handleCategoriesGet: handleCategoriesGet,
     handleCategoriesAndMetaGet: handleCategoriesAndMetaGet,
-    handleCategoriesPendingPost: handleCategoriesPendingPost
+    handleCategoriesPendingPost: handleCategoriesPendingPost,
+    handleCategoriesPendingGet: handleCategoriesPendingGet,
+    handleCategoriesDecisionPut: handleCategoriesDecisionPut,
 }

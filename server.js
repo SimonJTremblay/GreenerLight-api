@@ -52,8 +52,11 @@ app.get('/profile/:id', (req, res) => { profile.handleProfileGet(req, res, db) }
 
 app.get('/categories', (req, res) => { categories.handleCategoriesGet(req, res, db) })
 app.get('/categories/meta', (req, res) => { categories.handleCategoriesAndMetaGet(req, res, db) })
-app.post('/categories/pending', (req, res) => { categories.handleCategoriesPendingPost(req, res, db) })   //user submit
 
+app.post('/categories/pending', (req, res) => { categories.handleCategoriesPendingPost(req, res, db) })   //user submit
+app.get('/categories/pending', (req, res) => { categories.handleCategoriesPendingGet(req, res, db) }) // retrieve pending requests for review
+
+app.put('/categories/pending/', (req, res) => { categories.handleCategoriesDecisionPut(req, res, db) }) // retrieve pending requests for review
 
 app.get('/meta/:id', (req, res) => { meta.handleMetaGetFromId(req, res, db) })
 
